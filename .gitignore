@@ -209,4 +209,5 @@ __marimo__/
 
 training-job.yaml
 .terraform*
-terraform.tfstate
+terraform.tfstate*
+terraform.tfvars

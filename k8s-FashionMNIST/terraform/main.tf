@@ -6,10 +6,10 @@ provider "google" {
 }
 
 resource "google_container_cluster" "primary" {
-  name               = "gpu-cluster"
+  name               = var.cluster_name
   location           = var.zone
-  initial_node_count = 1 # This will be replaced by the GPU node pool
-  remove_default_node_pool = true # Remove the default node pool
+  initial_node_count = 1  
+  # remove_default_node_pool = true # Remove the default node pool
 
   network_policy {
     enabled = false

@@ -14,3 +14,11 @@ variable "zone" {
   type        = string
   default     = "us-west1-a"
 }
+
+variable "cluster_name" {
+  description = "The name of the GKE cluster."
+  type        = string
+  default     = "gpu-cluster"
+}
+
+
