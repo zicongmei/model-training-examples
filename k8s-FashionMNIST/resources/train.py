@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
+import datetime # Import datetime module
+import time # Import time module for measuring duration
 
 # Define a simple CNN model
 class SimpleCNN(nn.Module):
@@ -38,15 +40,22 @@ LEARNING_RATE = 0.001
 def main():
     # Check if a GPU is available
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Using device: {device}")
+    print(f"[{datetime.datetime.now()}] Using device: {device}")
 
     # Load FashionMNIST dataset
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,))
     ])
+
+    print(f"[{datetime.datetime.now()}] Starting data download...")
+    download_start_time = time.time() # Record start time for download
     train_dataset = torchvision.datasets.FashionMNIST(
         root='./data', train=True, download=True, transform=transform)
+    download_end_time = time.time() # Record end time for download
+    download_duration = download_end_time - download_start_time
+    print(f"[{datetime.datetime.now()}] Data download finished. Duration: {download_duration:.2f} seconds.")
+    
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     
@@ -57,6 +66,8 @@ def main():
 
     # Training loop
     model.train()
+    print(f"[{datetime.datetime.now()}] Starting training...")
+    training_start_time = time.time() # Record start time for training
     for epoch in range(1, EPOCHS + 1):
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
@@ -66,10 +77,11 @@ def main():
             loss.backward()
             optimizer.step()
             if batch_idx % 100 == 0:
-                print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} '
+                print(f'[{datetime.datetime.now()}] Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} '
                       f'({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
-    
-    print("Training finished!")
+    training_end_time = time.time() # Record end time for training
+    training_duration = training_end_time - training_start_time
+    print(f"[{datetime.datetime.now()}] Training finished! Duration: {training_duration:.2f} seconds.")
 
 if __name__ == '__main__':
     main()

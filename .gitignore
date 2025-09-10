@@ -211,3 +211,4 @@ training-job.yaml
 .terraform*
 terraform.tfstate*
 terraform.tfvars
+.hack/
