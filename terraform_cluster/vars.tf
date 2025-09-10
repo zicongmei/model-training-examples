@@ -21,4 +21,10 @@ variable "cluster_name" {
   default     = "gpu-cluster"
 }
 
+variable "gpc_node_size" {
+  description = "The number of GPU nodes in the cluster."
+  type        = number
+  default     = 1
+}
+
 

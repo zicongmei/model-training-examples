@@ -29,7 +29,7 @@ resource "google_container_node_pool" "gpu_node_pool" {
   name       = "gpu-node-pool"
   location   = var.zone
   cluster    = google_container_cluster.primary.name
-  node_count = 1
+  node_count = var.gpc_node_size
 
   node_config {
     machine_type = "g2-standard-8" # Recommended machine type for L4 GPUs
