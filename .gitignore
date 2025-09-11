@@ -212,3 +212,4 @@ training-job.yaml
 terraform.tfstate*
 terraform.tfvars
 .hack/
+global_variables.json
