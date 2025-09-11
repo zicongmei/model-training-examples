@@ -19,7 +19,7 @@ spec:
       containers:
       - name: training-container
         image: tensorflow/tensorflow:2.15.0-gpu
-        command: ["python", "/script/train.py"]
+        command: ["bash", "-c", "pip install scipy && python /script/train.py"]
         volumeMounts:
         - name: training-script-volume
           mountPath: /script

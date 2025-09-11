@@ -33,4 +33,5 @@ echo "Successfully generated Kubernetes YAML file: $OUTPUT_FILE"
 # kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.17.4/deployments/static/nvidia-device-plugin.yml
 
 # Optional: Uncomment to apply the manifest automatically
+kubectl delete -f $OUTPUT_FILE
 kubectl apply -f $OUTPUT_FILE

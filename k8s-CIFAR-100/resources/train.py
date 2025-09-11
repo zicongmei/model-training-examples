@@ -4,6 +4,7 @@ from tensorflow.keras.applications import ResNet50
 from tensorflow.keras.layers import Dense, Flatten, Dropout
 from tensorflow.keras.models import Model
 import numpy as np
+import scipy # Import scipy for ImageDataGenerator's internal operations
 
 print("TensorFlow version:", tf.__version__)
 print("Number of GPUs available:", len(tf.config.list_physical_devices('GPU')))
