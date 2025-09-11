@@ -5,6 +5,7 @@ import torchvision
 import torchvision.transforms as transforms
 import datetime # Import datetime module
 import time # Import time module for measuring duration
+import os # Import os for path operations
 
 # Define a simple CNN model
 class SimpleCNN(nn.Module):
@@ -36,6 +37,7 @@ class SimpleCNN(nn.Module):
 EPOCHS = 5
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
+MODEL_SAVE_PATH = "/output/fashion_mnist_cnn.pt" # Define the path where the model will be saved
 
 def main():
     # Check if a GPU is available
@@ -82,6 +84,11 @@ def main():
     training_end_time = time.time() # Record end time for training
     training_duration = training_end_time - training_start_time
     print(f"[{datetime.datetime.now()}] Training finished! Duration: {training_duration:.2f} seconds.")
+
+    # Save the trained model to the specified path
+    os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True) # Ensure the output directory exists
+    torch.save(model.state_dict(), MODEL_SAVE_PATH)
+    print(f"[{datetime.datetime.now()}] Model saved to {MODEL_SAVE_PATH}")
 
 if __name__ == '__main__':
     main()

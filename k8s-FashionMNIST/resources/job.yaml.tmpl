@@ -1,7 +1,14 @@
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: <<<K8S_SERVICE_ACCOUNT_NAME>>>
+  namespace: <<<K8S_NAMESPACE>>>
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: training-script-fashion-mnist
+  namespace: <<<K8S_NAMESPACE>>>
 data:
   train.py: |
 <<<TRAINING_SCRIPT>>>
@@ -10,25 +17,51 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: gpu-training-job-fashion-mnist
+  namespace: <<<K8S_NAMESPACE>>>
 spec:
   template:
     spec:
-      # Use the correct GKE label found in the node's YAML output
+      serviceAccountName: <<<K8S_SERVICE_ACCOUNT_NAME>>> # Service account for GCS access
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4
-      containers:
-      - name: training-container
+      initContainers:
+      - name: training-init-container # Init container to train and save the model
         image: pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
         command: ["python", "/script/train.py"]
         volumeMounts:
         - name: training-script-volume
           mountPath: /script
-        resources:
+        - name: model-output-volume # Mount for saving the trained model
+          mountPath: /output
+        resources: # GPU allocated to the init container for training
           limits:
             nvidia.com/gpu: 1
+      containers:
+      - name: upload-container # Main container to upload the saved model to GCS
+        image: google/cloud-sdk:latest # Image with gsutil for GCS operations
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            MODEL_NAME="fashion_mnist_cnn.pt"
+            MODEL_LOCAL_PATH="/output/${MODEL_NAME}"
+            GCS_MODEL_PATH="gs://<<<GCS_BUCKET>>>/models/fashion_mnist/<<<TIMESTAMP>>>/${MODEL_NAME}"
+            echo "Attempting to upload model from ${MODEL_LOCAL_PATH} to ${GCS_MODEL_PATH}"
+            if [ -f "${MODEL_LOCAL_PATH}" ]; then
+              gsutil cp "${MODEL_LOCAL_PATH}" "${GCS_MODEL_PATH}"
+              echo "Successfully uploaded ${MODEL_NAME} to GCS."
+            else
+              echo "Error: Model file ${MODEL_LOCAL_PATH} not found after init container completed! This should not happen."
+              exit 1
+            fi
+        volumeMounts:
+        - name: model-output-volume # Mount to read the trained model
+          mountPath: /output
+        # No GPU resources needed for upload
       volumes:
       - name: training-script-volume
         configMap:
           name: training-script-fashion-mnist
+      - name: model-output-volume # Shared emptyDir volume between init and main container
+        emptyDir: {}
       restartPolicy: OnFailure
   backoffLimit: 4

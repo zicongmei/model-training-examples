@@ -6,6 +6,7 @@ from tensorflow.keras.models import Model
 import numpy as np
 import scipy # Import scipy for ImageDataGenerator's internal operations
 import time # Import the time module for logging durations
+import os # Import os for path operations
 
 print("TensorFlow version:", tf.__version__)
 print("Number of GPUs available:", len(tf.config.list_physical_devices('GPU')))
@@ -68,6 +69,10 @@ print(f"[{time.ctime()}] Model training completed in {training_duration:.2f} sec
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 print('Test accuracy:', test_acc)
 
+# Define the path where the model will be saved
+MODEL_SAVE_PATH = "/output/resnet_cifar100.h5"
+
 # Save the trained model
-model.save("resnet_cifar100.h5")
-print("Model saved as resnet_cifar100.h5")
+os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True) # Ensure the output directory exists
+model.save(MODEL_SAVE_PATH)
+print(f"Model saved as {MODEL_SAVE_PATH}")
