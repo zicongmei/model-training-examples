@@ -5,12 +5,19 @@ from tensorflow.keras.layers import Dense, Flatten, Dropout
 from tensorflow.keras.models import Model
 import numpy as np
 import scipy # Import scipy for ImageDataGenerator's internal operations
+import time # Import the time module for logging durations
 
 print("TensorFlow version:", tf.__version__)
 print("Number of GPUs available:", len(tf.config.list_physical_devices('GPU')))
 
 # Load the CIFAR-100 dataset
+print(f"[{time.ctime()}] Starting CIFAR-100 dataset download...")
+download_start_time = time.time()
 (train_images, train_labels), (test_images, test_labels) = keras.datasets.cifar100.load_data()
+download_end_time = time.time()
+download_duration = download_end_time - download_start_time
+print(f"[{time.ctime()}] CIFAR-100 dataset download completed in {download_duration:.2f} seconds.")
+
 
 # Normalize pixel values
 train_images, test_images = train_images / 255.0, test_images / 255.0
@@ -48,11 +55,14 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Train the model for 15 epochs with data augmentation
-print("Starting model training (ResNet-50 on CIFAR-100)...")
+print(f"[{time.ctime()}] Starting model training (ResNet-50 on CIFAR-100)...")
+training_start_time = time.time()
 model.fit(datagen.flow(train_images, train_labels, batch_size=64),
           epochs=15,
           validation_data=(test_images, test_labels))
-print("Model training completed.")
+training_end_time = time.time()
+training_duration = training_end_time - training_start_time
+print(f"[{time.ctime()}] Model training completed in {training_duration:.2f} seconds.")
 
 # Evaluate the model
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
