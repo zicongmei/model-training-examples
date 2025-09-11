@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: training-script-fashion-mnist
+  name: training-script-cifar-100
 data:
   train.py: |
 <<<TRAINING_SCRIPT>>>
@@ -9,7 +9,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: gpu-training-job-fashion-mnist
+  name: training-cifar-100
 spec:
   template:
     spec:
@@ -18,7 +18,7 @@ spec:
         cloud.google.com/gke-accelerator: nvidia-l4
       containers:
       - name: training-container
-        image: pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
+        image: tensorflow/tensorflow:2.15.0-gpu
         command: ["python", "/script/train.py"]
         volumeMounts:
         - name: training-script-volume
@@ -29,6 +29,6 @@ spec:
       volumes:
       - name: training-script-volume
         configMap:
-          name: training-script-fashion-mnist
+          name: training-script-cifar-100
       restartPolicy: OnFailure
   backoffLimit: 4
