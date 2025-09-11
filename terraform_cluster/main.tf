@@ -38,6 +38,9 @@ resource "google_container_node_pool" "gpu_node_pool" {
       "https://www.googleapis.com/auth/cloud-platform",
     ]
 
+    # Use Ubuntu image for the node pool
+    image_type = "UBUNTU_CONTAINERD"
+
     guest_accelerator {
       type  = "nvidia-l4"
       count = 1
