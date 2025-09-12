@@ -29,7 +29,12 @@ resource "google_container_node_pool" "gpu_node_pool" {
   name       = "gpu-node-pool"
   location   = var.zone
   cluster    = google_container_cluster.primary.name
-  node_count = var.gpc_node_size
+  # node_count = var.gpc_node_size # Removed for autoscaling
+
+  autoscaling {
+    min_node_count = 0
+    max_node_count = var.gpc_node_size
+  }
 
   node_config {
     machine_type = "g2-standard-8" # Recommended machine type for L4 GPUs
@@ -64,4 +69,3 @@ resource "google_container_node_pool" "gpu_node_pool" {
     auto_upgrade = true
   }
 }
-
